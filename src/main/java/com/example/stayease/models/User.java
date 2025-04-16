@@ -1,6 +1,7 @@
 package com.example.stayease.models;
 
 
+import com.example.stayease.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,8 +26,12 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private int role;
+    private UserRole role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Ads> ads;
 
 
 
