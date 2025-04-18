@@ -2,6 +2,7 @@ package com.example.stayease.models;
 
 import com.example.stayease.enums.AdsType;
 import com.example.stayease.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
