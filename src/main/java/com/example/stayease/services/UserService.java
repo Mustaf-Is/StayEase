@@ -3,6 +3,7 @@ import com.example.stayease.repositories.UserRepository;
 import com.example.stayease.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class UserService {
         return existingUser != null ? userRepository.updateUser(existingUser) : null;
     }
 
+    @Transactional
     public void deleteUser(int id) {
         userRepository.deleteUserById(id);
     }
