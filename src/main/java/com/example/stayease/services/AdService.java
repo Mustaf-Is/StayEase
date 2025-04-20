@@ -4,6 +4,8 @@ import com.example.stayease.models.User;
 import com.example.stayease.repositories.AdRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 @Service
 public class AdService {
@@ -39,6 +41,8 @@ public class AdService {
         }
         return existingAd != null ? adRepository.updateAd(existingAd) : null;
     }
+
+    @Transactional
     public void deleteAd(int id) {
         adRepository.deleteAdById(id);
     }

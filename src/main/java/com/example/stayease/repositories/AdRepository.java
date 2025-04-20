@@ -1,11 +1,11 @@
 package com.example.stayease.repositories;
 import com.example.stayease.enums.AdsType;
 import com.example.stayease.models.Ads;
-import com.example.stayease.models.User;
-import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +29,9 @@ public interface AdRepository extends JpaRepository<Ads, Integer> {
     @Query(value = "CALL sp_update_ad(:#{#ad.id}, :#{#ad.title}, :#{#ad.description}, :#{#ad.pubDate}, :#{#ad.type}, :#{#ad.price})", nativeQuery = true)
     Ads updateAd(@Param("ad") Ads ad);
 
-    @Modifying
-    @Query(value = "CALL sp_delete_ad(:id)", nativeQuery = true)
+
+    @Procedure("stayease.sp_delete_ad")
+    @Transactional
     void deleteAdById(@Param("id") Integer id);
+
 }
