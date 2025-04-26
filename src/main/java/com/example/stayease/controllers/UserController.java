@@ -29,6 +29,7 @@ public class UserController {
                 .map(user -> new UserResponseDTO(
                     user.getId(),
                     user.getFullName(),
+                    user.getUsername(),
                     user.getEmail(),
                     user.getPassword(),
                     user.getRole(),
