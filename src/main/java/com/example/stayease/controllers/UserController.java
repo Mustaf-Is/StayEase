@@ -1,6 +1,8 @@
 package com.example.stayease.controllers;
+import com.example.stayease.DTOs.AdResponseDTO;
 import com.example.stayease.models.User;
 import com.example.stayease.services.UserService;
+import com.example.stayease.DTOs.UserResponseDTO;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +23,26 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        List<UserResponseDTO> responseDTOs = users.stream()
+                .map(user -> new UserResponseDTO(
+                    user.getId(),
+                    user.getFullName(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getRole(),
+                    user.getAds().stream().map(ad -> new AdResponseDTO(
+                            ad.getId(),
+                            ad.getTitle(),
+                            ad.getDescription(),
+                            ad.getPubDate(),
+                            ad.getType(),
+                            ad.getPrice(),
+                            ad.getUser().getId()
+                    )).toList()
+                )).toList();
+        return new ResponseEntity<>(responseDTOs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
