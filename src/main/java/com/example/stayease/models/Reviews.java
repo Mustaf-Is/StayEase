@@ -1,4 +1,7 @@
 package com.example.stayease.models;
+/**
+ * TO DO: Create books connection between the user and the ad
+ */
 
 import com.example.stayease.enums.Rating;
 import com.example.stayease.keys.ReviewId;

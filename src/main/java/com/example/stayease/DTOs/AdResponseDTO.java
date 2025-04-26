@@ -13,4 +13,5 @@ public record AdResponseDTO(
         double price,
         Integer userId
 ) {
+
 }
