@@ -34,7 +34,7 @@ public class UserService {
             existingUser.setPassword(user.getPassword());
             existingUser.setRole(user.getRole());
         }
-        return existingUser != null ? userRepository.updateUser(existingUser) : null;
+        return existingUser != null ? userRepository.updateUser(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), user.getRole() , user.getUsername()) : null;
     }
 
     public boolean existsByEmail(String email) {

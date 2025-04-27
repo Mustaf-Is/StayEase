@@ -10,6 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * TODO: Me e ndryshu edhe update-in edhe gjithashtu me rregullu problemin e reviews
+ */
+
+
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
@@ -27,9 +32,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                   @Param("role") UserRole role,
                   @Param("username") String username);
 
-    @Query(value = "CALL sp_update_user(:#{#user.id}, :#{#user.fullName}, :#{#user.username}, :#{#user.email}, :#{#user.password}, :#{#user.role})",
+    @Query(value = "CALL sp_update_user(:id, :fullName, :email, :password, :role, :username)",
             nativeQuery = true)
-    User updateUser(@Param("user") User user);
+    User updateUser(@Param("id") Integer id,
+                    @Param("fullName") String fullName,
+                    @Param("email") String email,
+                    @Param("password") String password,
+                    @Param("role") UserRole role,
+                    @Param("username") String username);
 
     @Procedure("stayease.sp_delete_user")
     @Transactional
