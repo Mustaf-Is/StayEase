@@ -1,18 +1,21 @@
 package com.example.stayease.DTOs;
 
 import com.example.stayease.enums.UserRole;
-import com.example.stayease.models.Ads;
+import lombok.Getter;
 
-import java.util.List;
-
-public record UserResponseDTO(
+public record CreateUserDTO(
         Integer id,
         String fullName,
         String username,
         String email,
         String password,
-        UserRole role,
-        List<AdResponseDTO> ads
+        UserRole role
 ) {
+    public String getEmail() {
+        return email;
+    }
 
+    public String setToken(String token) {
+        return token;
+    }
 }

@@ -23,17 +23,22 @@ public class UserService {
         return userRepository.findUserById(id).orElse(null);
     }
     public User createUser(User user) {
-        return userRepository.saveUser(user);
+        return userRepository.saveUser(user.getFullName(), user.getEmail(), user.getPassword(), user.getRole(), user.getUsername());
     }
     public User updateUser(int id, User user) {
         User existingUser = userRepository.findUserById(id).orElse(null);
         if (existingUser != null) {
             existingUser.setFullName(user.getFullName());
+            existingUser.setUsername(user.getUsername());
             existingUser.setEmail(user.getEmail());
             existingUser.setPassword(user.getPassword());
             existingUser.setRole(user.getRole());
         }
-        return existingUser != null ? userRepository.updateUser(existingUser) : null;
+        return existingUser != null ? userRepository.updateUser(user.getId(), user.getFullName(), user.getEmail(), user.getPassword(), user.getRole() , user.getUsername()) : null;
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Transactional
