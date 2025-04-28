@@ -42,17 +42,19 @@ public class ReviewController {
         return new ResponseEntity<>(responseDTOs, HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}/{adId}")
-    public ResponseEntity<ReviewResponseDTO> getReview(@PathVariable Integer userId, @PathVariable Integer adId) {
-        Reviews review = reviewService.getReviewById(userId, adId);
-        if (review != null) {
-            ReviewResponseDTO responseDTO = new ReviewResponseDTO(
-                    review.getComment(),
-                    review.getRating(),
-                    review.getAd().getId(),
-                    review.getUser().getId()
-            );
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    @GetMapping("{adId}")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewPerAd(@PathVariable Integer adId) {
+        List<Reviews> reviewsPerAd = reviewService.getReviewsPerAd(adId);
+        if (reviewsPerAd != null) {
+            List<ReviewResponseDTO> responseDTOs = reviewsPerAd.stream()
+                    .map(review -> new ReviewResponseDTO(
+                            review.getComment(),
+                            review.getRating(),
+                            review.getAd().getId(),
+                            review.getUser().getId()
+                    )).toList();
+
+            return new ResponseEntity<>(responseDTOs, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -89,7 +91,7 @@ public class ReviewController {
 
     @DeleteMapping("/{userId}/{adId}")
     public ResponseEntity<ReviewResponseDTO> deleteReview(@PathVariable Integer userId, @PathVariable Integer adId) {
-        Reviews review = reviewService.getReviewById(userId, adId);
+        Reviews review = reviewService.getReviewById(adId, userId);
         if(review == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
