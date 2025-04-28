@@ -5,6 +5,7 @@ import com.example.stayease.models.Ads;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface AddressRepository extends JpaRepository<Ads, Integer> {
                         @Param("zipcode") String zipcode,
                         @Param("adId") Integer adId);
 
-    @Query(value = "CALL sp_delete_address_by_ad_id(:adId)", nativeQuery = true)
+    @Procedure("stayease.sp_delete_address_by_ad_id")
     @Transactional
     void deleteAddressByAdId(@Param("adId") Integer adId);
 

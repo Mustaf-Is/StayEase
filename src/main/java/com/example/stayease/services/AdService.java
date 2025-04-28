@@ -26,9 +26,10 @@ public class AdService {
                 ad.getDescription(),
                 ad.getPubDate(),
                 ad.getType(),
-                ad.getPrice(),
-                user.getId()
-        );
+                ad.getPricePerDay(),
+                ad.getPricePerWeek(),
+                ad.getPricePerMonth(),
+                user.getId());
     }
     public Ads updateAd(int id, Ads ad) {
         Ads existingAd = adRepository.findAdById(id).orElse(null);
@@ -37,7 +38,9 @@ public class AdService {
             existingAd.setDescription(ad.getDescription());
             existingAd.setPubDate(ad.getPubDate());
             existingAd.setType(ad.getType());
-            existingAd.setPrice(ad.getPrice());
+            existingAd.setPricePerDay(ad.getPricePerDay());
+            existingAd.setPricePerWeek(ad.getPricePerWeek());
+            existingAd.setPricePerMonth(ad.getPricePerMonth());
         }
         return existingAd != null ? adRepository.updateAd(existingAd) : null;
     }

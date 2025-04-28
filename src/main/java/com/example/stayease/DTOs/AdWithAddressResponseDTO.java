@@ -4,7 +4,7 @@ import com.example.stayease.enums.AdsType;
 
 import java.time.LocalDateTime;
 
-public record AdResponseDTO(
+public record AdWithAddressResponseDTO(
         Integer id,
         String title,
         String description,
@@ -13,6 +13,10 @@ public record AdResponseDTO(
         double pricePerDay,
         double pricePerWeek,
         double pricePerMonth,
+        String street,
+        String city,
+        String zipcode,
         Integer userId
 ) {
+
 }

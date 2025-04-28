@@ -1,7 +1,6 @@
 package com.example.stayease.DTOs;
 
 import com.example.stayease.enums.UserRole;
-import com.example.stayease.models.Ads;
 
 import java.util.List;
 

@@ -50,7 +50,7 @@ const SignUp = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        // Prepare data for the backend
+
         const userData = {
           fullName: formData.fullName,
           username: formData.username, // Include username in request
@@ -59,12 +59,11 @@ const SignUp = () => {
           role: formData.role,
         };
 
-        // Make API call to the backend
+
         const response = await axios.post('http://localhost:8080/api/auth/register', userData);
 
         if (response.status === 200) {
           console.log('User registered successfully:', response.data);
-          // localStorage.setItem('token', response.data.token);
           navigate('/login');
         }
       } catch (error) {

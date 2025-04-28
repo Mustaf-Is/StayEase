@@ -11,7 +11,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
+
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
@@ -25,21 +25,21 @@ const Login = () => {
     setError('');
 
     try {
-      // Prepare request payload
+
       const authData = { email, password };
 
-      // Send POST request to login endpoint
+
       const response = await axios.post('http://localhost:8080/api/auth/login', authData);
 
       // On success, store token and navigate
       const { token } = response.data;
       localStorage.setItem('token', token);
       console.log('Login successful, token:', token);
-      navigate('/'); // Adjust to your protected route
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error);
       if (error.response) {
-        // Handle specific error cases
+
         if (error.response.status === 401 || error.response.status === 400) {
           setError('Invalid email or password');
         } else {

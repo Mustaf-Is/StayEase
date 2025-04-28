@@ -1,5 +1,6 @@
 package com.example.stayease.controllers;
 import com.example.stayease.DTOs.AdResponseDTO;
+import com.example.stayease.DTOs.AdWithAddressResponseDTO;
 import com.example.stayease.models.User;
 import com.example.stayease.services.UserService;
 import com.example.stayease.DTOs.UserResponseDTO;
@@ -39,7 +40,9 @@ public class UserController {
                             ad.getDescription(),
                             ad.getPubDate(),
                             ad.getType(),
-                            ad.getPrice(),
+                            ad.getPricePerDay(),
+                            ad.getPricePerWeek(),
+                            ad.getPricePerMonth(),
                             ad.getUser().getId()
                     )).toList()
                 )).toList();
