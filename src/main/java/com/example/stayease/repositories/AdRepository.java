@@ -18,15 +18,17 @@ public interface AdRepository extends JpaRepository<Ads, Integer> {
     @Query(value = "CALL sp_find_ad_by_id(:id)", nativeQuery = true)
     Optional<Ads> findAdById(@Param("id") Integer id);
 
-    @Query(value = "CALL sp_save_ad(:title, :description, :pubDate, :type, :price, :userId)", nativeQuery = true)
+    @Query(value = "CALL sp_save_ad(:title, :description, :pubDate, :type, :pricePerDay, :pricePerWeek, :pricePerMonth, :userId)", nativeQuery = true)
     Ads saveAd(@Param("title") String title,
                @Param("description") String description,
                @Param("pubDate") LocalDateTime pubDate,
                @Param("type") AdsType type,
-               @Param("price") double price,
+               @Param("pricePerDay") double pricePerDay,
+               @Param("pricePerWeek") double pricePerWeek,
+               @Param("pricePerMonth") double pricePerMonth,
                @Param("userId") Integer userId);
 
-    @Query(value = "CALL sp_update_ad(:#{#ad.id}, :#{#ad.title}, :#{#ad.description}, :#{#ad.pubDate}, :#{#ad.type}, :#{#ad.price})", nativeQuery = true)
+    @Query(value = "CALL sp_update_ad(:#{#ad.id}, :#{#ad.title}, :#{#ad.description}, :#{#ad.pubDate}, :#{#ad.type}, :#{#ad.pricePerDay}, :#{#ad.pricePerWeek}, :#{#ad.pricePerMonth})", nativeQuery = true)
     Ads updateAd(@Param("ad") Ads ad);
 
 

@@ -10,11 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * TODO: Me e ndryshu edhe update-in edhe gjithashtu me rregullu problemin e reviews
- */
-
-
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 

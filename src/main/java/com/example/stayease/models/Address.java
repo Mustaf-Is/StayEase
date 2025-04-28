@@ -23,7 +23,7 @@ public class Address {
 
     @OneToOne
     @JoinColumn(name = "ad_id", nullable = false)
-    private Ads ad;  // renamed from 'ads' to 'ad' for better naming
+    private Ads ad;
 
 
 }

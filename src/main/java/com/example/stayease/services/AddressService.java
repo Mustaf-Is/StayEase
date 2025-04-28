@@ -13,11 +13,11 @@ public class AddressService {
     public AddressService(AddressRepository addressRepository) {
         this.addressRepository = addressRepository;
     }
-    public Address createAddress(String street, String city, String zipcode, Integer adId) {
+    public Address saveAddress(Address address, Integer adId) {
         return addressRepository.saveAddress(
-                street,
-                city,
-                zipcode,
+                address.getStreet(),
+                address.getCity(),
+                address.getZipcode(),
                 adId
         );
     }

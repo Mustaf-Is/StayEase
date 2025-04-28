@@ -29,8 +29,14 @@ public class Ads {
     @Column(name = "type", nullable = false)
     private AdsType type;
 
-    @Column(name = "price", nullable = false)
-    private double price;
+    @Column(name = "price_per_day", nullable = false)
+    private double pricePerDay;
+
+    @Column(name = "price_per_week", nullable = false)
+    private double pricePerWeek;
+
+    @Column(name = "price_per_month", nullable = false)
+    private double pricePerMonth;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
