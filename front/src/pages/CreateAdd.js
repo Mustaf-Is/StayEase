@@ -5,10 +5,10 @@ import { jwtDecode } from 'jwt-decode'; // Use named import
 
 const AddAd = () => {
   const carouselImages = [
-    'https://images.unsplash.com/photo-1497366754035-f6157f2cf32f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    'https://www.vitastudent.com/wp-content/uploads/2024/04/ULTIMATE-V239-VITA-CARDIFF-AUG-20235868_RT-e1713968356133.jpg?w=2048',
     'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-    'https://images.unsplash.com/photo-1602342655668-7d4b26102ad8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    'https://www.vitastudent.com/wp-content/uploads/2024/04/DELUXE-IS-D-132F-IONA-STREET-EDINBURGH-VITA-DEC-20230175.jpg?w=1024',
   ];
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -44,12 +44,17 @@ const AddAd = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % carouselImages.length);
-    }, 5000);
+      setCurrentImageIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % carouselImages.length;
+        console.log('Current image index:', newIndex);
+        return newIndex;
+      });
+    }, 10000);
     return () => clearInterval(interval);
   }, [carouselImages.length]);
 
-  // Check if user is logged in on component mount
+
+
   useEffect(() => {
     const userId = getUserId();
     if (!userId) {
@@ -111,12 +116,12 @@ const AddAd = () => {
             city: formData.city,
             zipcode: formData.zipcode,
           },
-          userId: parseInt(userId), // Ensure userId is an integer
+          userId: parseInt(userId),
         };
 
         const response = await axios.post('http://localhost:8080/api/ads', adData, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Include JWT token
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
@@ -146,6 +151,7 @@ const AddAd = () => {
                     index === currentImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
                 style={{ backgroundImage: `url(${image})` }}
+                onError={() => console.log(`Failed to load image ${index}: ${image}`)}
             />
         ))}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-blue-900/40"></div>
