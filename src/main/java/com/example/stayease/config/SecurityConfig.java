@@ -5,6 +5,7 @@ import com.example.stayease.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -35,10 +36,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**").disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/ads/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/ads/**").permitAll()
+                        .requestMatchers("/uploads/property-images/**").permitAll()
+                        .requestMatchers("/api/upload/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/ads/**").authenticated() // Require auth for POST
+                        .requestMatchers(HttpMethod.PUT, "/api/ads/**").authenticated() // Require auth for PUT
+                        .requestMatchers(HttpMethod.DELETE, "/api/ads/**").authenticated() // Require auth for DELETE
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -54,7 +60,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true); // Allow credentials (e.g., cookies, Authorization header)
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);// Allow credentials (e.g., cookies, Authorization header)
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

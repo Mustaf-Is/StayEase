@@ -3,8 +3,10 @@ package com.example.stayease.models;
 import com.example.stayease.enums.AdsType;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,6 +43,9 @@ public class Ads {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
 
     @OneToOne(mappedBy = "ad", cascade = CascadeType.ALL)
     private Address address;

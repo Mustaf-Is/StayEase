@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Zian';
+    src: url("./Zian free promo.woff") format("woff"),
+    url("./Zian free promo.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}

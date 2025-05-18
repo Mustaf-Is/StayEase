@@ -27,6 +27,12 @@ const AddAd = () => {
   const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
 
+  // New state for image uploads
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const MAX_IMAGES = 20;
 
   const getUserId = () => {
     const token = localStorage.getItem('token');
@@ -53,8 +59,6 @@ const AddAd = () => {
     return () => clearInterval(interval);
   }, [carouselImages.length]);
 
-
-
   useEffect(() => {
     const userId = getUserId();
     if (!userId) {
@@ -62,6 +66,40 @@ const AddAd = () => {
       navigate('/login');
     }
   }, [navigate]);
+
+  // Handle image selection
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    // Check if adding these files would exceed the limit
+    if (selectedImages.length + files.length > MAX_IMAGES) {
+      setErrors({...errors, images: `You can upload a maximum of ${MAX_IMAGES} images.`});
+      return;
+    }
+
+    // Add new files to the selected images array
+    setSelectedImages(prevImages => [...prevImages, ...files]);
+
+    // Create preview URLs for the new images
+    const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+    setPreviewImages(prevPreviews => [...prevPreviews, ...newPreviewUrls]);
+
+    // Clear any previous errors
+    if (errors.images) {
+      const newErrors = {...errors};
+      delete newErrors.images;
+      setErrors(newErrors);
+    }
+  };
+
+  // Remove an image from the selection
+  const removeImage = (index) => {
+    // Release the object URL to avoid memory leaks
+    URL.revokeObjectURL(previewImages[index]);
+
+    setSelectedImages(prevImages => prevImages.filter((_, i) => i !== index));
+    setPreviewImages(prevPreviews => prevPreviews.filter((_, i) => i !== index));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,6 +123,12 @@ const AddAd = () => {
     if (!formData.street.trim()) newErrors.street = 'Street is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.zipcode.trim()) newErrors.zipcode = 'Zipcode is required';
+
+    // Validate images
+    if (selectedImages.length === 0) {
+      newErrors.images = 'Please upload at least one image';
+    }
+
     return newErrors;
   };
 
@@ -101,6 +145,41 @@ const AddAd = () => {
       }
 
       try {
+        // Step 1: Upload images first and get URLs
+        let imageUrls = [];
+        if (selectedImages.length > 0) {
+          setIsUploading(true);
+          setUploadProgress(0);
+
+          // Create FormData for image upload
+          const uploadFormData = new FormData();
+          selectedImages.forEach(image => {
+            uploadFormData.append('images', image);
+          });
+
+          // Upload images to server
+          const uploadResponse = await axios.post('http://localhost:8080/api/upload', uploadFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setUploadProgress(percentCompleted);
+            }
+          });
+
+          setIsUploading(false);
+
+          // Get image URLs from response
+          if (uploadResponse.data.success) {
+            imageUrls = uploadResponse.data.imageUrls;
+          } else {
+            throw new Error('Failed to upload images');
+          }
+        }
+
+        // Step 2: Create the ad with image URLs
         const adData = {
           ad: {
             title: formData.title,
@@ -116,11 +195,13 @@ const AddAd = () => {
             city: formData.city,
             zipcode: formData.zipcode,
           },
-          userId: parseInt(userId),
+          imageUrls: imageUrls,
+          userId: parseInt(userId)
         };
 
         const response = await axios.post('http://localhost:8080/api/ads', adData, {
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
@@ -208,6 +289,99 @@ const AddAd = () => {
                     placeholder="Describe your property or vehicle..."
                 />
                 {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+              </div>
+
+              {/* Image Upload Section */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Property Images (Max 20)
+                </label>
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                  <div className="space-y-1 text-center">
+                    <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                    >
+                      <path
+                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                          htmlFor="images"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                      >
+                        <span>Upload images</span>
+                        <input
+                            id="images"
+                            name="images"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={handleImageChange}
+                            disabled={selectedImages.length >= MAX_IMAGES}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF up to 10MB each
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {selectedImages.length} of {MAX_IMAGES} images selected
+                    </p>
+                  </div>
+                </div>
+                {errors.images && <p className="mt-1 text-sm text-red-600">{errors.images}</p>}
+
+                {/* Image Preview Section */}
+                {previewImages.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Images:</h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {previewImages.map((previewUrl, index) => (
+                            <div key={index} className="relative group">
+                              <img
+                                  src={previewUrl}
+                                  alt={`Preview ${index}`}
+                                  className="h-24 w-full object-cover rounded-md"
+                              />
+                              <button
+                                  type="button"
+                                  onClick={() => removeImage(index)}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                        ))}
+                      </div>
+                    </div>
+                )}
+
+                {/* Upload Progress Bar */}
+                {isUploading && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                            className="bg-blue-600 h-2.5 rounded-full"
+                            style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500 text-center mt-1">
+                        Uploading: {uploadProgress}%
+                      </p>
+                    </div>
+                )}
               </div>
 
               <div>
@@ -333,9 +507,10 @@ const AddAd = () => {
             <div>
               <button
                   type="submit"
-                  className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 group-hover:shadow-lg"
+                  disabled={isUploading}
+                  className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white ${isUploading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 group-hover:shadow-lg`}
               >
-                Create Ad
+                {isUploading ? 'Uploading...' : 'Create Ad'}
               </button>
             </div>
           </form>
