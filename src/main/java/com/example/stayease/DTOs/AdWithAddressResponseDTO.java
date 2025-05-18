@@ -3,6 +3,7 @@ package com.example.stayease.DTOs;
 import com.example.stayease.enums.AdsType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record AdWithAddressResponseDTO(
         Integer id,
@@ -16,6 +17,7 @@ public record AdWithAddressResponseDTO(
         String street,
         String city,
         String zipcode,
+        List<String> imageUrls,
         Integer userId
 ) {
 

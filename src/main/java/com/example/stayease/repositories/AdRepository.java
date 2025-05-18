@@ -15,6 +15,9 @@ public interface AdRepository extends JpaRepository<Ads, Integer> {
     @Query(value = "CALL sp_find_all_ads()", nativeQuery = true)
     List<Ads> findAllAds();
 
+    @Query(value = "CALL sp_find_all_ads_per_user(:id)", nativeQuery = true)
+    List<Ads> findAllAdsPerUser(@Param("id") Integer id);
+
     @Query(value = "CALL sp_find_ad_by_id(:id)", nativeQuery = true)
     Optional<Ads> findAdById(@Param("id") Integer id);
 

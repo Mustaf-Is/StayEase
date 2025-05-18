@@ -17,6 +17,9 @@ public class AdService {
     public List<Ads> getAllAds(){
         return adRepository.findAllAds();
     }
+    public List<Ads> getAdsByUser(User user) {
+        return adRepository.findAllAdsPerUser(user.getId());
+    }
     public Ads getAdById(int id) {
         return adRepository.findAdById(id).orElse(null);
     }
